@@ -49,7 +49,8 @@ export async function fetchCmsData() {
       }
     }
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/cms/landing_page`);
+    const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001').replace(/\/+$/, '');
+    const res = await fetch(`${baseUrl}/api/cms/landing_page`);
     const d = await res.json();
     if (!d.error && d.heroTitle) {
       const finalData = { ...DEFAULT_DATA, ...d, contacts: d.contacts || DEFAULT_DATA.contacts };

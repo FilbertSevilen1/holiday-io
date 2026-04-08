@@ -60,7 +60,8 @@ export default function CMSPage() {
   const handleSave = async () => {
     setMsg("Saving...");
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/cms/landing_page`, {
+      const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001').replace(/\/+$/, '');
+      const res = await fetch(`${baseUrl}/api/cms/landing_page`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),

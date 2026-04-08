@@ -57,6 +57,35 @@ export default function CMSPage() {
     setData({ ...data, [arrayName]: newArray });
   };
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, arrayName: string, index: number) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("image", file);
+    setMsg("Uploading...");
+
+    try {
+      const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001').replace(/\/+$/, '');
+      const res = await fetch(`${baseUrl}/api/upload`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (res.ok) {
+        const result = await res.json();
+        // Immediately splice the resultant string into array
+        handleArrayChange(arrayName, index, "image", result.path);
+        setMsg("Image uploaded successfully!");
+      } else {
+        setMsg("Error uploading image");
+      }
+    } catch (err) {
+      setMsg("Connection error on upload");
+    }
+    setTimeout(() => setMsg(""), 3000);
+  };
+
   const handleSave = async () => {
     setMsg("Saving...");
     try {
@@ -300,8 +329,14 @@ export default function CMSPage() {
                         <input type="text" value={pod.dur} onChange={(e) => handleArrayChange("podcasts", i, "dur", e.target.value)} className="w-full p-3 border border-zinc-200 rounded-lg outline-none" />
                       </div>
                       <div className="col-span-2">
-                        <label className="block text-xs font-semibold text-zinc-500 mb-1">Image URL</label>
-                        <input type="text" value={pod.image} onChange={(e) => handleArrayChange("podcasts", i, "image", e.target.value)} className="w-full p-3 border border-zinc-200 rounded-lg outline-none" />
+                        <label className="block text-xs font-semibold text-zinc-500 mb-1">Image Context</label>
+                        <div className="flex gap-2 items-center">
+                          <input type="text" value={pod.image} onChange={(e) => handleArrayChange("podcasts", i, "image", e.target.value)} className="flex-1 p-3 border border-zinc-200 rounded-lg outline-none text-sm bg-zinc-50 font-mono" placeholder="/beach-prayer.png" />
+                          <label className="cursor-pointer bg-white border border-zinc-200 hover:bg-zinc-50 text-indigo-600 font-bold px-4 py-3 rounded-lg transition-colors shadow-sm whitespace-nowrap text-sm">
+                            <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, "podcasts", i)} className="hidden" />
+                            Upload JPG/PNG
+                          </label>
+                        </div>
                       </div>
                     </div>
                   </div>

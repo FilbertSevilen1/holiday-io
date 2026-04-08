@@ -14,16 +14,7 @@ const TABS = [
 
 export default function CMSPage() {
   const [isMounted, setIsMounted] = useState(false);
-  const [data, setData] = useState<any>(() => {
-    if (typeof window !== "undefined") {
-      const cached = localStorage.getItem("cmsDataCache");
-      const cacheTime = localStorage.getItem("cmsDataCacheTime");
-      if (cached && cacheTime && (Date.now() - parseInt(cacheTime) <= 60 * 60 * 1000)) {
-        try { return JSON.parse(cached); } catch(e) {}
-      }
-    }
-    return null;
-  });
+  const [data, setData] = useState<any>(null);
   const [msg, setMsg] = useState("");
   const [activeTab, setActiveTab] = useState("hero");
 
@@ -97,11 +88,6 @@ export default function CMSPage() {
       });
       if (res.ok) {
         setMsg("Saved successfully!");
-        // CRITICAL: Invalidate the 1-hour cache so the main site immediately sees these updates!
-        if (typeof window !== "undefined") {
-          localStorage.removeItem("cmsDataCache");
-          localStorage.removeItem("cmsDataCacheTime");
-        }
       } else {
         setMsg("Error saving data");
       }

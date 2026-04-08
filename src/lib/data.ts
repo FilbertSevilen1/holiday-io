@@ -37,28 +37,11 @@ export const DEFAULT_DATA = {
 
 export async function fetchCmsData() {
   try {
-    if (typeof window !== "undefined") {
-      const cached = localStorage.getItem("cmsDataCache");
-      const cacheTime = localStorage.getItem("cmsDataCacheTime");
-      
-      if (cached && cacheTime) {
-        const isExpired = Date.now() - parseInt(cacheTime) > 60 * 60 * 1000;
-        if (!isExpired) {
-          return JSON.parse(cached);
-        }
-      }
-    }
-
     const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001').replace(/\/+$/, '');
     const res = await fetch(`${baseUrl}/api/cms/landing_page`);
     const d = await res.json();
     if (!d.error && d.heroTitle) {
-      const finalData = { ...DEFAULT_DATA, ...d, contacts: d.contacts || DEFAULT_DATA.contacts };
-      if (typeof window !== "undefined") {
-        localStorage.setItem("cmsDataCache", JSON.stringify(finalData));
-        localStorage.setItem("cmsDataCacheTime", Date.now().toString());
-      }
-      return finalData;
+      return { ...DEFAULT_DATA, ...d, contacts: d.contacts || DEFAULT_DATA.contacts };
     }
     return DEFAULT_DATA;
   } catch (e) {

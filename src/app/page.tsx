@@ -54,17 +54,7 @@ const Skeleton = () => (
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
-  const [cmsData, setCmsData] = useState<any>(() => {
-    // Read cache synchronously on client to skip fetch delay later
-    if (typeof window !== "undefined") {
-      const cached = localStorage.getItem("cmsDataCache");
-      const cacheTime = localStorage.getItem("cmsDataCacheTime");
-      if (cached && cacheTime && (Date.now() - parseInt(cacheTime) <= 60 * 60 * 1000)) {
-        try { return JSON.parse(cached); } catch(e) {}
-      }
-    }
-    return null;
-  });
+  const [cmsData, setCmsData] = useState<any>(null);
 
   useEffect(() => {
     setIsMounted(true); // Hydration is finished
